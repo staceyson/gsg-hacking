@@ -1,4 +1,4 @@
-# Atari hacking
+# Atari GameStation Go hacking
 
 This repository contains various notes on hacking an [Atari GSG][] to run whatever software you want on it.
 
