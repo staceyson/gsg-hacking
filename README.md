@@ -1,6 +1,6 @@
-# Evercade hacking
+# Atari hacking
 
-This repository contains various notes on hacking an [Evercade][] to run whatever software you want on it.
+This repository contains various notes on hacking an [Atari GSG][] to run whatever software you want on it.
 
 This repository is not official.
 
