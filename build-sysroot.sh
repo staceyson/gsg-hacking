@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# evercade-hacking liberates your Evercade.
+# gsg-hacking liberates your Atari GameStation Go.
+# Copyright (C) 2026  Stacey Son
 # Copyright (C) 2021  Matthew Glazar
 #
 # This program is free software: you can redistribute it and/or modify
@@ -40,6 +41,16 @@ toolchain_cxx="${toolchain_prefix}/bin/${target}-g++"
 default_cflags='-g -O2'
 default_cxxflags='-g -O2'
 
+# Agressive optimization flags for RetroArch
+ra_cflags='-Ofast -fdata-sections -ffunction-sections -Wl,--gc-sections -fno-stack-protector -fno-ident -fomit-frame-pointer -falign-functions=1 -falign-jumps=1 -falign-loops=1 -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-unroll-loops -fmerge-all-constants -fno-math-errno -marm -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard'
+
+ra_cxxflags='-Ofast -fdata-sections -ffunction-sections -Wl,--gc-sections -fno-stack-protector -fno-ident -fomit-frame-pointer -falign-functions=1 -falign-jumps=1 -falign-loops=1 -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-unroll-loops -fmerge-all-constants -fno-math-errno -marm -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard'
+
+# Put RetroArch on a diet
+# disable_ra_options='--disable-d3d9 --disable-d3dx --disable-dinput --disable-discord --disable-dsound --disable-ffmpeg --disable-gdi --disable-hid --disable-ibxm --disable-jack --disable-langextra --disable-materialui --disable-netplaydiscovery --disable-networkgamepad --disable-networking --disable-online_updater --disable-opengl --disable-opengl1 --disable-oss --disable-parport --disable-pulse --disable-qt --disable-rgui --disable-roar --disable-rsound --disable-runahead --disable-screenshots --disable-sdl --disable-sdl2 --disable-sixel --disable-ssa --disable-translate --disable-v4l2 --disable-vg --disable-videocore --disable-videoprocessor --disable-wasapi --disable-winmm --disable-x11 --disable-xaudio --disable-xinerama --disable-xmb --disable-xrandr --disable-xshm --disable-xvideo'
+
+disable_ra_options='--disable-oss --disable-netplaydiscovery --disable-networkgamepad --disable-networking --disable-7zip'
+
 meson_cross_file="${toolchain_prefix}/meson-cross-file.ini"
 
 gcc_target_make_options=(
@@ -47,7 +58,7 @@ gcc_target_make_options=(
     CXXFLAGS_FOR_TARGET="${default_cxxflags}"
 )
 
-make_parallelism="-j$[$(nproc) * 5 / 4]"
+make_parallelism="-j$[$(nproc) * 4 / 4]"
 
 build_toolchain=0
 build_strace=0
@@ -415,7 +426,8 @@ build_wayland() {
 
 # libz.so.1.2.11
 build_zlib() {
-    download https://www.zlib.net/zlib-1.2.11.tar.gz zlib-1.2.11.tar.gz
+    # download https://www.zlib.net/zlib-1.2.11.tar.gz zlib-1.2.11.tar.gz
+    download https://zlib.net/fossils/zlib-1.2.11.tar.gz zlib-1.2.11.tar.gz
     rm -rf zlib-1.2.11
     run tar xf "${downloads_dir}/zlib-1.2.11.tar.gz"
 
@@ -431,7 +443,8 @@ build_zlib() {
 # libgbm.so.1, libEGL.so.1, libGLESv2.so.2,
 # libGLESv1_CM.so.1, libglapi.so.0.0.0
 build_mesa3d() {
-    download https://archive.mesa3d.org//mesa-20.3.4.tar.xz mesa-20.3.4.tar.xz
+    # download https://archive.mesa3d.org//mesa-20.3.4.tar.xz mesa-20.3.4.tar.xz
+     download https://archive.mesa3d.org/older-versions/20.x/mesa-20.3.4.tar.xz mesa-20.3.4.tar.xz
     rm -rf mesa-20.3.4
     run tar xf "${downloads_dir}/mesa-20.3.4.tar.xz"
 
@@ -547,20 +560,18 @@ EOF
 }
 
 build_retroarch() {
-    download https://codeload.github.com/libretro/RetroArch/tar.gz/v1.9.5 RetroArch-1.9.5.tar.gz
     rm -rf RetroArch-1.9.5
-    run tar xf "${downloads_dir}/RetroArch-1.9.5.tar.gz"
+    run git clone https://github.com/staceyson/RetroArch-1.9.5.git
 
     cd RetroArch-1.9.5
-    patch -p1 <"${scripts_dir}/retroarch-input.patch"
     # TODO: libhq2x.so
     # TODO: --enable-vulkan --enable-kms --enable-alsa
     extra_cppflags="-DWL_EGL_PLATFORM"
     run PATH="${toolchain_prefix}/bin:${PATH}" \
         CC="${toolchain_cc}" \
         CXX="${toolchain_cxx}" \
-        CFLAGS="${default_cflags} ${extra_cppflags}" \
-        CXXFLAGS="${default_cxxflags} ${extra_cppflags}" \
+        CFLAGS="${ra_cflags} ${extra_cppflags}" \
+        CXXFLAGS="${ra_cxxflags} ${extra_cppflags}" \
         LDFLAGS="-Wl,--as-needed -lffi -lwayland-server -lglapi -lexpat -Wl,--no-as-needed" \
         PKG_CONFIG_PATH="${sysroot}/usr/lib/pkgconfig" \
         ./configure \
@@ -572,7 +583,10 @@ build_retroarch() {
         --enable-egl \
         --disable-builtinzlib \
         --disable-opengl1 \
-        --enable-zlib
+        --enable-floathard \
+        --enable-neon \
+        --enable-zlib \
+        ${disable_ra_options}
     run make ${make_parallelism}
     run "${toolchain_prefix}/bin/${target}-strip" \
         -o "${sysroot}/usr/bin/retroarch" \
