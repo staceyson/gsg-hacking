@@ -1,6 +1,6 @@
-# Evercade toolchain
+# GSG toolchain
 
-Want to build software for your Evercade?
+Want to build software for your Atari GSG?
 Use our GCC-based toolchain.
 
 ## Building the toolchain
@@ -16,4 +16,4 @@ The list of build-time dependencies can be found in `Dockerfile`.
 
 To avoid installing tools and libraries on your computer manually, you can build the toolchain in a Docker container:
 
-    $ docker build --tag evercade-hacking . && docker run -it --mount "type=bind,source=$PWD,destination=$PWD" evercade-hacking:latest "${PWD}/build-sysroot.sh" toolchain
+    $ docker build --tag gsg-hacking . && docker run -it --mount "type=bind,source=$PWD,destination=$PWD" gsg-hacking:latest "${PWD}/build-sysroot.sh" toolchain
