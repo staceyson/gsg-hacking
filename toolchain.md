@@ -16,4 +16,4 @@ The list of build-time dependencies can be found in `Dockerfile`.
 
 To avoid installing tools and libraries on your computer manually, you can build the toolchain in a Docker container:
 
-    $ docker build --tag gsg-hacking . && docker run -it --mount "type=bind,source=$PWD,destination=$PWD" gsg-hacking:latest "${PWD}/build-sysroot.sh" toolchain
+    $ sudo docker build --tag gsg-hacking . && sudo docker run -it --mount "type=bind,source=$PWD,destination=$PWD" gsg-hacking:latest "${PWD}/build-sysroot.sh" toolchain
