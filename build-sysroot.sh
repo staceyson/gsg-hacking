@@ -41,15 +41,18 @@ toolchain_cxx="${toolchain_prefix}/bin/${target}-g++"
 default_cflags='-g -O2'
 default_cxxflags='-g -O2'
 
-# Agressive optimization flags for RetroArch
-ra_cflags='-Ofast -fdata-sections -ffunction-sections -Wl,--gc-sections -fno-stack-protector -fno-ident -fomit-frame-pointer -falign-functions=1 -falign-jumps=1 -falign-loops=1 -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-unroll-loops -fmerge-all-constants -fno-math-errno -marm -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard'
+# ATARI_GSG flag and agressive optimization flags for RetroArch
+ra_cflags='-DATARI_GSG -Ofast -fdata-sections -ffunction-sections -Wl,--gc-sections -fno-stack-protector -fno-ident -fomit-frame-pointer -falign-functions=1 -falign-jumps=1 -falign-loops=1 -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-unroll-loops -fmerge-all-constants -fno-math-errno -marm -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard'
 
-ra_cxxflags='-Ofast -fdata-sections -ffunction-sections -Wl,--gc-sections -fno-stack-protector -fno-ident -fomit-frame-pointer -falign-functions=1 -falign-jumps=1 -falign-loops=1 -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-unroll-loops -fmerge-all-constants -fno-math-errno -marm -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard'
+ra_cxxflags='-DATARI_GSG -Ofast -fdata-sections -ffunction-sections -Wl,--gc-sections -fno-stack-protector -fno-ident -fomit-frame-pointer -falign-functions=1 -falign-jumps=1 -falign-loops=1 -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-unroll-loops -fmerge-all-constants -fno-math-errno -marm -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard'
 
 # Put RetroArch on a diet
 # disable_ra_options='--disable-d3d9 --disable-d3dx --disable-dinput --disable-discord --disable-dsound --disable-ffmpeg --disable-gdi --disable-hid --disable-ibxm --disable-jack --disable-langextra --disable-materialui --disable-netplaydiscovery --disable-networkgamepad --disable-networking --disable-online_updater --disable-opengl --disable-opengl1 --disable-oss --disable-parport --disable-pulse --disable-qt --disable-rgui --disable-roar --disable-rsound --disable-runahead --disable-screenshots --disable-sdl --disable-sdl2 --disable-sixel --disable-ssa --disable-translate --disable-v4l2 --disable-vg --disable-videocore --disable-videoprocessor --disable-wasapi --disable-winmm --disable-x11 --disable-xaudio --disable-xinerama --disable-xmb --disable-xrandr --disable-xshm --disable-xvideo'
 
-disable_ra_options='--disable-oss --disable-netplaydiscovery --disable-networkgamepad --disable-networking --disable-7zip'
+# disable_ra_options='--disable-oss --disable-netplaydiscovery --disable-networkgamepad --disable-networking --disable-7zip'
+disable_ra_options='--disable-netplaydiscovery --disable-networkgamepad --disable-networking --disable-7zip'
+
+#disable_ra_options='--disable-alsa'
 
 meson_cross_file="${toolchain_prefix}/meson-cross-file.ini"
 
